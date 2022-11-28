@@ -19,7 +19,7 @@ import com.example.unsplashandroid.modal.UnPlashResponse
 import retrofit2.HttpException
 import java.io.IOException
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment() ,PhotoRVAdapter.OnItemClickLister {
     private val TAG = "GeeksFragment"
     private val binding get() = _binding!!
     private var _binding: FragmentHomeBinding? = null
@@ -39,7 +39,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setUpImageList(photoList: List<UnPlashResponse>) {
-        val photoRVAdapter = PhotoRVAdapter(photoList,null)
+        val photoRVAdapter = PhotoRVAdapter(photoList,null,this)
         binding.gridView.adapter = photoRVAdapter
         val staggeredGridLayoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -93,5 +93,9 @@ class HomeFragment : Fragment() {
                 Log.e(TAG, "Response not successful")
             }
         }
+    }
+
+    override fun onItemClick(position: Int) {
+        Log.e(TAG, "Response not successful")
     }
 }

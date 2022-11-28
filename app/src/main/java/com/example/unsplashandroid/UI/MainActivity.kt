@@ -1,5 +1,6 @@
 package com.example.unsplashandroid.UI
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -37,7 +38,8 @@ class MainActivity : AppCompatActivity() {
 
         var button = menu.findItem(R.id.shareButton)
         button.setOnMenuItemClickListener {
-            Log.e(TAG, "HttpException, unexpected response")
+            intent = Intent(applicationContext,SearchImageActivity::class.java)
+            startActivity(intent)
             return@setOnMenuItemClickListener true
         }
         return super.onCreateOptionsMenu(menu)

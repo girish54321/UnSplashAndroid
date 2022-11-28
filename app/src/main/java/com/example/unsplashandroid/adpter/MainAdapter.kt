@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.unsplashandroid.R
+import com.example.unsplashandroid.databinding.ImageItemBinding
 import com.example.unsplashandroid.modal.CategoryModal
 import com.example.unsplashandroid.modal.UnPlashResponse
 import com.squareup.picasso.Picasso
@@ -15,24 +16,43 @@ import com.squareup.picasso.Picasso
 class PhotoRVAdapter(
     private val photoList: List<UnPlashResponse>?,
     private val topicList: List<CategoryModal>?,
-) : RecyclerView.Adapter<PhotoRVAdapter.PhotoViewHolder>() {
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): PhotoRVAdapter.PhotoViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(
-            R.layout.image_item,
-            parent, false
-        )
-        return PhotoRVAdapter.PhotoViewHolder(itemView)
+    private val listener: OnItemClickLister
+) : RecyclerView.Adapter<PhotoRVAdapter.ViewHolder>() {
+
+    inner class ViewHolder(binding: ImageItemBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener{
+        var image = binding.imageView
+        var categoryView = binding.categoryView
+        var categoryText = binding.categoryText
+        init {
+            binding.imageView.setOnClickListener (this)
+        }
+
+        override fun onClick(v: View?) {
+            var i = adapterPosition
+            if(i != RecyclerView.NO_POSITION) {
+                listener.onItemClick(i)
+            }
+        }
     }
 
-    override fun onBindViewHolder(holder: PhotoRVAdapter.PhotoViewHolder, position: Int) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(
+            ImageItemBinding.inflate(
+                LayoutInflater.from(
+                    parent.context
+                ),
+                parent,
+                false
+            )
+        )
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (topicList.isNullOrEmpty()) {
             Picasso.get().load(photoList!![position].urls?.regular)
                 .resize(photoList[position].width!! / 5, photoList[position].height!! / 5)
                 .placeholder(R.drawable.gray)
-                .into(holder.photoIV);
+                .into(holder.image);
             holder.categoryView.visibility = View.GONE
         } else {
             Picasso.get().load(topicList[position].coverPhoto?.urls?.regular)
@@ -41,7 +61,7 @@ class PhotoRVAdapter(
                     topicList[position].coverPhoto?.height!! / 5
                 )
                 .placeholder(R.drawable.gray)
-                .into(holder.photoIV);
+                .into(holder.image);
             holder.categoryText.text = topicList[position].title
         }
     }
@@ -54,10 +74,8 @@ class PhotoRVAdapter(
         }
     }
 
-    class PhotoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val photoIV: ImageView = itemView.findViewById(R.id.imageView)
-        val categoryView: LinearLayout = itemView.findViewById(R.id.categoryView)
-        val categoryText: TextView = itemView.findViewById(R.id.categoryText)
+    interface OnItemClickLister {
+        fun onItemClick(position: Int)
     }
 
 }
