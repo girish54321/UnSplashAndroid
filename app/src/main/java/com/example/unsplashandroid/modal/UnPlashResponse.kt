@@ -1,6 +1,7 @@
 package com.example.unsplashandroid.modal
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class UnPlashResponse (
 
@@ -23,7 +24,7 @@ data class UnPlashResponse (
 //    @SerializedName("topic_submissions"        ) var topicSubmissions       : TopicSubmissions? = TopicSubmissions(),
     @SerializedName("user"                     ) var user                   : User?             = User()
 
-)
+): Serializable
 
 data class Urls (
 
@@ -34,7 +35,7 @@ data class Urls (
     @SerializedName("thumb"    ) var thumb   : String? = null,
     @SerializedName("small_s3" ) var smallS3 : String? = null
 
-)
+): Serializable
 
 data class Links (
 
@@ -46,7 +47,7 @@ data class Links (
     @SerializedName("following" ) var following : String? = null,
     @SerializedName("followers" ) var followers : String? = null
 
-)
+): Serializable
 
 data class ProfileImage (
 
@@ -54,7 +55,7 @@ data class ProfileImage (
     @SerializedName("medium" ) var medium : String? = null,
     @SerializedName("large"  ) var large  : String? = null
 
-)
+): Serializable
 
 data class Social (
 
@@ -63,7 +64,7 @@ data class Social (
     @SerializedName("twitter_username"   ) var twitterUsername   : String? = null,
     @SerializedName("paypal_email"       ) var paypalEmail       : String? = null
 
-)
+): Serializable
 
 
 data class Sponsor (
@@ -88,7 +89,7 @@ data class Sponsor (
     @SerializedName("for_hire"           ) var forHire           : Boolean?      = null,
     @SerializedName("social"             ) var social            : Social?       = Social()
 
-)
+): Serializable
 
 data class Sponsorship (
 
@@ -97,7 +98,7 @@ data class Sponsorship (
     @SerializedName("tagline_url"     ) var taglineUrl     : String?           = null,
     @SerializedName("sponsor"         ) var sponsor        : Sponsor?          = Sponsor()
 
-)
+): Serializable
 
 
 
@@ -124,4 +125,4 @@ data class User (
     @SerializedName("for_hire"           ) var forHire           : Boolean?      = null,
     @SerializedName("social"             ) var social            : Social?       = Social()
 
-)
+): Serializable
