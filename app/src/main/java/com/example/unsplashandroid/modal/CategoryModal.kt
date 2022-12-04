@@ -1,6 +1,7 @@
 package com.example.unsplashandroid.modal
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class CategoryModal(
     @SerializedName("id") var id: String? = null,
@@ -22,7 +23,7 @@ data class CategoryModal(
     @SerializedName("owners") var owners: ArrayList<Owners> = arrayListOf(),
     @SerializedName("cover_photo") var coverPhoto: CoverPhoto? = CoverPhoto(),
     @SerializedName("preview_photos") var previewPhotos: ArrayList<PreviewPhotos> = arrayListOf()
-)
+): Serializable
 
 data class Owners(
     @SerializedName("id") var id: String? = null,
@@ -44,7 +45,7 @@ data class Owners(
     @SerializedName("accepted_tos") var acceptedTos: Boolean? = null,
     @SerializedName("for_hire") var forHire: Boolean? = null,
     @SerializedName("social") var social: Social? = Social()
-)
+): Serializable
 
 data class CoverPhoto(
     @SerializedName("id") var id: String? = null,
@@ -65,16 +66,16 @@ data class CoverPhoto(
     @SerializedName("sponsorship") var sponsorship: String? = null,
     @SerializedName("topic_submissions") var topicSubmissions: TopicSubmissions? = TopicSubmissions(),
     @SerializedName("user") var user: User? = User()
-)
+): Serializable
 
 data class TopicSubmissions(
     @SerializedName("experimental") var experimental: Experimental? = Experimental()
-)
+): Serializable
 
 data class Experimental(
     @SerializedName("status") var status: String? = null,
     @SerializedName("approved_on") var approvedOn: String? = null
-)
+): Serializable
 
 data class PreviewPhotos(
     @SerializedName("id") var id: String? = null,
@@ -82,4 +83,4 @@ data class PreviewPhotos(
     @SerializedName("updated_at") var updatedAt: String? = null,
     @SerializedName("blur_hash") var blurHash: String? = null,
     @SerializedName("urls") var urls: Urls? = Urls()
-)
+): Serializable

@@ -1,6 +1,7 @@
 package com.example.unsplashandroid.UI.fragment
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.myquizapp.helper.BasicAlertDialog
 import com.example.myquizapp.helper.LoadingScreen
 import com.example.unsplashandroid.Api.RetrofitInstance
+import com.example.unsplashandroid.UI.SelectedCategoryActivity
+import com.example.unsplashandroid.UI.SelectedImageActivity
 import com.example.unsplashandroid.adpter.PhotoRVAdapter
 import com.example.unsplashandroid.const.Constants
 import com.example.unsplashandroid.databinding.FragmentCategoryBinding
@@ -24,6 +27,7 @@ class CategoryFragment : Fragment() ,PhotoRVAdapter.OnItemClickLister {
     private val TAG = "CategoryFragment"
     private val binding get() = _binding!!
     private var _binding: FragmentCategoryBinding? = null
+    var cateGoryList: List<CategoryModal?>? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,7 +42,7 @@ class CategoryFragment : Fragment() ,PhotoRVAdapter.OnItemClickLister {
         _binding = null
     }
 
-    private fun setUpImageList(categoryList: List<CategoryModal>) {
+    private fun setUpImageList(categoryList: List<CategoryModal?>?) {
         val photoRVAdapter = PhotoRVAdapter(null,categoryList,this)
         binding.gridView.adapter = photoRVAdapter
         val staggeredGridLayoutManager =
@@ -76,12 +80,12 @@ class CategoryFragment : Fragment() ,PhotoRVAdapter.OnItemClickLister {
                 return@launchWhenCreated
             }
             if (response.isSuccessful && response.body() != null) {
-                val data: List<CategoryModal> = response.body()!!
+                cateGoryList = response.body()!!
                 LoadingScreen.hideLoading()
-                if (data.isEmpty()) {
+                if (cateGoryList?.isEmpty() == true) {
                     return@launchWhenCreated
                 }
-                setUpImageList(data)
+                setUpImageList(cateGoryList)
             } else {
                 LoadingScreen.hideLoading()
                 BasicAlertDialog.displayBasicAlertDialog(
@@ -96,6 +100,12 @@ class CategoryFragment : Fragment() ,PhotoRVAdapter.OnItemClickLister {
     }
 
     override fun onItemClick(position: Int) {
-        Log.e(TAG, "Response not successful")
+        if (cateGoryList.isNullOrEmpty()) {
+            return
+        }
+        val data = cateGoryList!![position]
+        val intent = Intent(this.activity?.baseContext!!, SelectedCategoryActivity::class.java)
+        intent.putExtra("data", data)
+        startActivity(intent)
     }
 }

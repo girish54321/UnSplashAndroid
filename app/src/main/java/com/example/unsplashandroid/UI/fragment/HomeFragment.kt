@@ -100,7 +100,6 @@ class HomeFragment : Fragment(), PhotoRVAdapter.OnItemClickLister {
     }
 
     override fun onItemClick(position: Int) {
-        Log.e(TAG, "Response not successful")
         if (dataList.isNullOrEmpty()) {
             return
         }

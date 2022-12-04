@@ -1,103 +1,115 @@
 package com.example.unsplashandroid.UI
 
+
+import android.Manifest
+import android.app.Activity
+import android.app.DownloadManager
+import android.content.Context
+import android.net.Uri
 import android.os.Bundle
-import android.view.View
+import android.os.Environment.DIRECTORY_PICTURES
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.myquizapp.helper.AppAlertDialog
 import com.example.unsplashandroid.R
+import com.example.unsplashandroid.const.Constants
 import com.example.unsplashandroid.databinding.ActivitySelectedImageBinding
 import com.example.unsplashandroid.modal.UnPlashResponse
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.squareup.picasso.Picasso
+import java.io.File
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.math.log
 
 class SelectedImageActivity : AppCompatActivity() {
     private var binding: ActivitySelectedImageBinding? = null
     var data: UnPlashResponse? = null
+    lateinit var context: Context
+    private val permissions = listOf(
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySelectedImageBinding.inflate(layoutInflater)
         setContentView(binding?.root)
         setSupportActionBar(binding?.toolbar)
 
-        getUpComeingData()
+        binding?.toolbar?.setNavigationOnClickListener {
+            finish()
+        }
 
+        context = this
+        getUpComeingData()
         binding?.downlodBtn?.setOnClickListener {
-//            singleChoiceItem(it)
-            val builder = AlertDialog.Builder(this)
-            val items = arrayOf("Microsoft", "Apple", "Amazon", "Google")
-            val selectedList = ArrayList<Int>()
-            builder.setTitle("This is list choice dialog box")
-//            builder.setMessage("Some My Test or more info")
-            builder.setItems(items, { dialogInterface, which ->
-                Toast.makeText(this@SelectedImageActivity, items[which], Toast.LENGTH_SHORT).show()
-            })
-//            builder.setSingleChoiceItems(
-//                items,selectedList[0]
-//            ){
-//
-//            }
-//            builder.setSingleChoiceItems()
-//            builder.setSingleChoiceItems(
-//                items, null
-//            ) { dialog, which, isChecked ->
-//                if (isChecked) {
-//                    selectedList.add(which)
-//                } else if (selectedList.contains(which)) {
-//                    selectedList.remove(Integer.valueOf(which))
-//                }
-//            }
-            builder.setPositiveButton("DONE") { dialogInterface, i ->
-                val selectedStrings = ArrayList<String>()
-                for (j in selectedList.indices) {
-                    selectedStrings.add(items[selectedList[j]])
-                }
-                Toast.makeText(
-                    applicationContext,
-                    "Items selected are: " + Arrays.toString(selectedStrings.toTypedArray()),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            builder.show()
+            requestPermissions()
         }
     }
 
-    fun singleChoiceDialog(view: View) {
-        val singleChoiceList = arrayOf("google", "yahoo", "bing", "yandex", "baidu", "duckduckgo")
-        val builder = AlertDialog.Builder(this)
-
-        builder.setTitle("Select Search Engine")
-
-        builder.setSingleChoiceItems(singleChoiceList, -1,
-            { dialogInterface, which ->
-                Toast.makeText(this@SelectedImageActivity, singleChoiceList[which], Toast.LENGTH_SHORT).show()
-            }
-        )
-
-//        builder.setPositiveButton("ok", SelectedImageActivity.OnClickListener { dialog, id ->
-//            dialog.dismiss()
-//        })
-        builder.setNegativeButton("cancel", { dialog, id ->
-            dialog.dismiss()
-        })
-
-        // builder.create().show();
-        val alertDialog = builder.create()
-        alertDialog.show()
+    private fun startDownload (url: String) {
+//        return createFolder
+        Log.e("DD",DIRECTORY_PICTURES)
+        Log.e("MY CODE", context.filesDir.toString())
+//        return
+        val request = DownloadManager.Request(Uri.parse(url))
+            .setTitle(data?.description)
+            .setDescription(data?.description)
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setAllowedOverMetered(true)
+//            .setDestinationInExternalFilesDir(context,context.filesDir.toString(),"${System.currentTimeMillis()}.jpeg")
+            .setDestinationInExternalPublicDir(DIRECTORY_PICTURES,"${System.currentTimeMillis()}.jpeg")
+        val de = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+        de.enqueue(request)
     }
 
-    fun singleChoiceItem(view: View) {
-        val singleChoiceList = arrayOf("google", "yahoo", "bing", "yandex", "baidu", "duckduckgo")
+    private fun createFolder(): File {
+        val file = File(getExternalFilesDir(null), "filename")//getExternalFilesDir
+        if(!file.exists()){
+            file.mkdir()
+        }
+        Log.e("FILE BATH",file.absolutePath)
+        return file
+
+    }
+
+    private fun downloadImage() {
+        if (!Constants.checkWriteExternalPermission(context) || !Constants.checkReadExternalPermission(context)) {
+            requestPermissions()
+            return
+        }
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Select Search Engine")
-
-        builder.setItems(singleChoiceList, { dialogInterface, which ->
-            Toast.makeText(this@SelectedImageActivity, singleChoiceList[which], Toast.LENGTH_SHORT).show()
-        })
-
-        // builder.create().show();
-        val alertDialog = builder.create()
-        alertDialog.show()
+        val items = arrayOf("Raw", "Full", "Regular", "Small")
+        val selectedList = ArrayList<Int>()
+        builder.setTitle("Download Image")
+        builder.setItems(items) { dialogInterface, which ->
+            if (items[which] == "Raw") {
+                data?.urls?.raw?.let { startDownload(it) }
+            } else if (items[which] == "Full") {
+                data?.urls?.full?.let { startDownload(it) }
+            } else if (items[which] == "Regular") {
+                data?.urls?.regular?.let { startDownload(it) }
+            } else if (items[which] == "Small") {
+                data?.urls?.small?.let { startDownload(it) }
+            } else if (items[which] == "Thumb") {
+                data?.urls?.thumb?.let { startDownload(it) }
+            } else if (items[which] == "Small_s3") {
+                data?.urls?.smallS3?.let { startDownload(it) }
+            }
+        }
+        builder.setPositiveButton("Close") { dialogInterface, i ->
+            val selectedStrings = ArrayList<String>()
+            for (j in selectedList.indices) {
+                selectedStrings.add(items[selectedList[j]])
+            }
+        }
+        builder.show()
     }
 
     private fun getUpComeingData() {
@@ -118,4 +130,35 @@ class SelectedImageActivity : AppCompatActivity() {
             .into(binding?.selectedImageView);
     }
 
+    private fun requestPermissions () {
+        if(Constants.checkReadExternalPermission(context) && Constants.checkWriteExternalPermission(context)){
+            downloadImage()
+            return
+        }
+        AppAlertDialog.displayLoadingWithText(
+            context, "Permission required",
+            "More Info", false
+        ) { dialogInterface, which ->
+            Dexter.withActivity(context as Activity?)
+                .withPermissions(permissions)
+                .withListener(object : MultiplePermissionsListener {
+                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                        report.let {
+                            if (report.areAllPermissionsGranted()) {
+                                Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show()
+                                downloadImage()
+                            } else {
+                                Toast.makeText(context, "Please Grant Permissions to use the app", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                    override fun onPermissionRationaleShouldBeShown(permissions: List<PermissionRequest?>?, token: PermissionToken?) {
+                        token?.continuePermissionRequest()
+                    }
+                }).withErrorListener{
+                    Toast.makeText(this, it.name, Toast.LENGTH_SHORT).show()
+                }.check()
+        }
+    }
 }
+

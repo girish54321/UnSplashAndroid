@@ -2,6 +2,7 @@ package com.example.unsplashandroid.UI
 
 import android.app.SearchManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -97,17 +98,22 @@ class SearchImageActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClickListe
     }
 
     override fun onItemClick(position: Int) {
-        Log.e(TAG, "Response not successful")
+        if (datalist.isNullOrEmpty()) {
+            return
+        }
+        val data = datalist!![position]
+        val intent = Intent(this.baseContext!!, SelectedImageActivity::class.java)
+        intent.putExtra("data", data)
+        startActivity(intent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        var inflater = menuInflater
+        val inflater = menuInflater
         inflater.inflate(R.menu.search_menu, menu)
-        var manager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        var searchItem = menu.findItem(R.id.search_image)
-        var searchView = searchItem?.actionView as SearchView
+        val manager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchItem = menu.findItem(R.id.search_image)
+        val searchView = searchItem?.actionView as SearchView
         searchView.setSearchableInfo(manager.getSearchableInfo((componentName)))
-//        searchView.requestFocus()
         searchView.setIconifiedByDefault(true);
         searchView.isFocusable = true;
         searchView.isIconified = false;

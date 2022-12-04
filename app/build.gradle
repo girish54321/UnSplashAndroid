@@ -67,4 +67,6 @@ dependencies {
 //    implementation 'xyz.belvi.blurHash:blurHash:1.0.4'
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
+
+    implementation 'com.karumi:dexter:6.2.3'
 }

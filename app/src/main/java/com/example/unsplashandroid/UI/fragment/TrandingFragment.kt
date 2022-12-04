@@ -1,6 +1,7 @@
 package com.example.unsplashandroid.UI.fragment
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.myquizapp.helper.BasicAlertDialog
 import com.example.myquizapp.helper.LoadingScreen
 import com.example.unsplashandroid.Api.RetrofitInstance
+import com.example.unsplashandroid.UI.SelectedImageActivity
 import com.example.unsplashandroid.adpter.PhotoRVAdapter
 import com.example.unsplashandroid.const.Constants
 import com.example.unsplashandroid.databinding.FragmentHomeBinding
@@ -23,6 +25,7 @@ class TrandingFragment : Fragment(), PhotoRVAdapter.OnItemClickLister {
     private val TAG = "GeeksFragment"
     private val binding get() = _binding!!
     private var _binding: FragmentHomeBinding? = null
+    private var dataList: List<UnPlashResponse?>? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,8 +41,8 @@ class TrandingFragment : Fragment(), PhotoRVAdapter.OnItemClickLister {
         _binding = null
     }
 
-    private fun setUpImageList(photoList: List<UnPlashResponse>) {
-        val photoRVAdapter = PhotoRVAdapter(photoList,null,this)
+    private fun setUpImageList() {
+        val photoRVAdapter = PhotoRVAdapter(dataList,null,this)
         binding.gridView.adapter = photoRVAdapter
         val staggeredGridLayoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -78,10 +81,11 @@ class TrandingFragment : Fragment(), PhotoRVAdapter.OnItemClickLister {
             if (response.isSuccessful && response.body() != null) {
                 val data: List<UnPlashResponse> = response.body()!!
                 LoadingScreen.hideLoading()
+                dataList = data
                 if (data.isEmpty()) {
                     return@launchWhenCreated
                 }
-                setUpImageList(data)
+                setUpImageList()
             } else {
                 LoadingScreen.hideLoading()
                 BasicAlertDialog.displayBasicAlertDialog(
@@ -96,6 +100,12 @@ class TrandingFragment : Fragment(), PhotoRVAdapter.OnItemClickLister {
     }
 
     override fun onItemClick(position: Int) {
-        Log.e(TAG, "Response not successful")
+        if (dataList.isNullOrEmpty()) {
+            return
+        }
+        val data = dataList!![position]
+        val intent = Intent(this.activity?.baseContext!!, SelectedImageActivity::class.java)
+        intent.putExtra("data", data)
+        startActivity(intent)
     }
 }
