@@ -2,16 +2,19 @@ package com.example.unsplashandroid.UI
 
 
 import android.Manifest
-import android.app.Activity
-import android.app.DownloadManager
+import android.app.*
+import android.app.NotificationManager.IMPORTANCE_HIGH
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_PICTURES
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.PRIORITY_MAX
 import com.example.myquizapp.helper.AppAlertDialog
 import com.example.unsplashandroid.R
 import com.example.unsplashandroid.const.Constants
@@ -23,6 +26,7 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.squareup.picasso.Picasso
+import okhttp3.internal.notify
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -49,22 +53,44 @@ class SelectedImageActivity : AppCompatActivity() {
         context = this
         getUpComeingData()
         binding?.downlodBtn?.setOnClickListener {
-            requestPermissions()
+//            requestPermissions()
+            createNotification()
         }
     }
 
+    private fun createNotification(){
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "CHANNEL_ID"
+            val descriptionText = "getString(R.string.channel_description"
+            val importance = IMPORTANCE_HIGH
+            val channel = NotificationChannel(name, name, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+
+            var builder = NotificationCompat.Builder(this, "CHANNEL_ID")
+                .setSmallIcon(R.drawable.ic_search)
+                .setContentTitle("textTitle")
+                .setContentText("textContent")
+            notificationManager.notify(1234, builder.build())
+        }
+
+    }
+
     private fun startDownload (url: String) {
-//        return createFolder
-        Log.e("DD",DIRECTORY_PICTURES)
-        Log.e("MY CODE", context.filesDir.toString())
-//        return
         val request = DownloadManager.Request(Uri.parse(url))
             .setTitle(data?.description)
             .setDescription(data?.description)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setAllowedOverMetered(true)
 //            .setDestinationInExternalFilesDir(context,context.filesDir.toString(),"${System.currentTimeMillis()}.jpeg")
-            .setDestinationInExternalPublicDir(DIRECTORY_PICTURES,"${System.currentTimeMillis()}.jpeg")
+//            .setDestinationInExternalFilesDir(context,DIRECTORY_PICTURES,"${System.currentTimeMillis()}.jpeg") // Save it under package
+            .setDestinationInExternalPublicDir(DIRECTORY_PICTURES,"${System.currentTimeMillis()}.jpeg") // Public Folder
         val de = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         de.enqueue(request)
     }
