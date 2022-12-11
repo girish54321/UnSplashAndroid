@@ -45,22 +45,17 @@ class SelectedImageActivity : AppCompatActivity() {
         binding = ActivitySelectedImageBinding.inflate(layoutInflater)
         setContentView(binding?.root)
         setSupportActionBar(binding?.toolbar)
-
         binding?.toolbar?.setNavigationOnClickListener {
             finish()
         }
-
         context = this
         getUpComeingData()
         binding?.downlodBtn?.setOnClickListener {
-//            requestPermissions()
-            createNotification()
+            requestPermissions()
         }
     }
 
     private fun createNotification(){
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "CHANNEL_ID"
             val descriptionText = "getString(R.string.channel_description"
@@ -68,12 +63,11 @@ class SelectedImageActivity : AppCompatActivity() {
             val channel = NotificationChannel(name, name, importance).apply {
                 description = descriptionText
             }
-            // Register the channel with the system
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
 
-            var builder = NotificationCompat.Builder(this, "CHANNEL_ID")
+            val builder = NotificationCompat.Builder(this, "CHANNEL_ID")
                 .setSmallIcon(R.drawable.ic_search)
                 .setContentTitle("textTitle")
                 .setContentText("textContent")

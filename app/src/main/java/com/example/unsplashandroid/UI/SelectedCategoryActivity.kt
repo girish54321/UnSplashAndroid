@@ -30,6 +30,9 @@ class SelectedCategoryActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClick
         binding = ActivitySelectedCategoryBinding.inflate(layoutInflater)
         setContentView(binding?.root)
         setSupportActionBar(binding?.toolbar)
+        binding?.toolbar?.setNavigationOnClickListener {
+            finish()
+        }
         getUpComeingData()
     }
 
