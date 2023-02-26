@@ -28,13 +28,6 @@ interface UnsPlashApi {
         @Query("query") query: String
     ): Response<SearchImageModal>
 
-//    @GET("topics/qPYsDzvJOYc/photos?client_id=jRBzm2zUw2eoIPSHZxLvY_hnSh0P8J91P2THDay4y8w")
-//    suspend fun getTopicImage(
-//        @Query("topicId") topicId: String,
-//        @Query("photos") photos: String,
-//        @Query("client_id") clientId: String
-//    ): Response<List<UnPlashResponse>>
-
     @GET
     suspend fun getTopicImage(
         @Url url: String

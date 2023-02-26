@@ -55,48 +55,15 @@ class SelectedImageActivity : AppCompatActivity() {
         }
     }
 
-    private fun createNotification(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "CHANNEL_ID"
-            val descriptionText = "getString(R.string.channel_description"
-            val importance = IMPORTANCE_HIGH
-            val channel = NotificationChannel(name, name, importance).apply {
-                description = descriptionText
-            }
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-
-            val builder = NotificationCompat.Builder(this, "CHANNEL_ID")
-                .setSmallIcon(R.drawable.ic_search)
-                .setContentTitle("textTitle")
-                .setContentText("textContent")
-            notificationManager.notify(1234, builder.build())
-        }
-
-    }
-
     private fun startDownload (url: String) {
         val request = DownloadManager.Request(Uri.parse(url))
             .setTitle(data?.description)
             .setDescription(data?.description)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setAllowedOverMetered(true)
-//            .setDestinationInExternalFilesDir(context,context.filesDir.toString(),"${System.currentTimeMillis()}.jpeg")
-//            .setDestinationInExternalFilesDir(context,DIRECTORY_PICTURES,"${System.currentTimeMillis()}.jpeg") // Save it under package
             .setDestinationInExternalPublicDir(DIRECTORY_PICTURES,"${System.currentTimeMillis()}.jpeg") // Public Folder
         val de = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         de.enqueue(request)
-    }
-
-    private fun createFolder(): File {
-        val file = File(getExternalFilesDir(null), "filename")//getExternalFilesDir
-        if(!file.exists()){
-            file.mkdir()
-        }
-        Log.e("FILE BATH",file.absolutePath)
-        return file
-
     }
 
     private fun downloadImage() {

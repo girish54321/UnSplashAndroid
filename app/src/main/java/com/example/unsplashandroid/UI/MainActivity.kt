@@ -1,19 +1,15 @@
 package com.example.unsplashandroid.UI
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
-import com.example.unsplashandroid.AppService.FirebaseService
 import com.example.unsplashandroid.R
 import com.example.unsplashandroid.UI.fragment.CategoryFragment
 import com.example.unsplashandroid.UI.fragment.HomeFragment
 import com.example.unsplashandroid.UI.fragment.TrandingFragment
 import com.example.unsplashandroid.adpter.ViewPagerAdapter
 import com.example.unsplashandroid.databinding.ActivityMainBinding
-import com.google.firebase.messaging.FirebaseMessaging
 
 
 class MainActivity : AppCompatActivity() {
@@ -34,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         binding?.viewPager?.adapter = adapter
         binding?.tabs?.setupWithViewPager(binding?.viewPager)
 
-        saveFCMToken()
     }
 
 
@@ -49,22 +44,4 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onCreateOptionsMenu(menu)
     }
-
-    private fun saveFCMToken(){
-        FirebaseService.sharedPref = getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
-//        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
-//            FirebaseService.token = it.token
-//            etToken.setText(it.token)
-//        }
-        FirebaseMessaging.getInstance().token
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    if (task.result != null) {
-                        FirebaseService.token = task.result!!
-                        Log.e(TAG,task.result!!)
-                    }
-                }
-            }
-    }
-
 }

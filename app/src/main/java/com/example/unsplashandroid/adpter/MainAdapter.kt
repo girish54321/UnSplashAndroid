@@ -15,17 +15,14 @@ class PhotoRVAdapter(
     private val topicList: List<CategoryModal?>?,
     private val listener: OnItemClickLister
 ) : RecyclerView.Adapter<PhotoRVAdapter.ViewHolder>() {
-
     inner class ViewHolder(binding: ImageItemBinding) : RecyclerView.ViewHolder(binding.root),
         View.OnClickListener {
         var image = binding.imageView
         var categoryView = binding.categoryView
         var categoryText = binding.categoryText
-
         init {
             binding.imageView.setOnClickListener(this)
         }
-
         override fun onClick(v: View?) {
             var i = adapterPosition
             if (i != RecyclerView.NO_POSITION) {
