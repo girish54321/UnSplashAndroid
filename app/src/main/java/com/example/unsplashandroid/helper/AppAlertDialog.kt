@@ -15,14 +15,8 @@ object AppAlertDialog {
         builder!!.setMessage(subTitle)
         builder!!.setCancelable(cancelable)
         //performing positive action
-//        builder!!.setPositiveButton("Yes"){dialogInterface, which ->
-//            Toast.makeText(context,"clicked yes",Toast.LENGTH_LONG).show()
-//        }
         builder!!.setPositiveButton("Yes",onOk)
         //performing cancel action
-//        builder!!.setNeutralButton("Cancel"){dialogInterface , which ->
-//            Toast.makeText(context,"clicked cancel\n operation cancel",Toast.LENGTH_LONG).show()
-//        }
         //performing negative action
         builder!!.setNegativeButton("No"){dialogInterface, which ->
             Toast.makeText(context,"clicked No",Toast.LENGTH_LONG).show()
