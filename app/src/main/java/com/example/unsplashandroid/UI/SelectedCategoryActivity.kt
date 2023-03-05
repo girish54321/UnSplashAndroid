@@ -12,11 +12,13 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.myquizapp.helper.BasicAlertDialog
 import com.example.myquizapp.helper.LoadingScreen
 import com.example.unsplashandroid.Api.RetrofitInstance
+import com.example.unsplashandroid.R
 import com.example.unsplashandroid.adpter.PhotoRVAdapter
 import com.example.unsplashandroid.const.Constants
 import com.example.unsplashandroid.databinding.ActivitySelectedCategoryBinding
 import com.example.unsplashandroid.modal.CategoryModal
 import com.example.unsplashandroid.modal.UnPlashResponse
+import com.squareup.picasso.Picasso
 import retrofit2.HttpException
 import java.io.IOException
 import java.util.*
@@ -69,7 +71,13 @@ class SelectedCategoryActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClick
                     Locale.getDefault()
                 ) else it.toString()
             }
+            Picasso.get().load(selectedCategory?.coverPhoto?.urls?.regular)
+                .placeholder(R.drawable.gray)
+                .into(binding?.expandedImage);
             getCategoryImages()
+            binding?.collapsingToolbar?.setCollapsedTitleTextColor(resources.getColor(R.color.white))
+            binding?.collapsingToolbar?.setExpandedTitleColor(resources.getColor(R.color.white))
+            binding?.toolbar?.setTitleTextColor(resources.getColor(R.color.white))
         }
     }
 
