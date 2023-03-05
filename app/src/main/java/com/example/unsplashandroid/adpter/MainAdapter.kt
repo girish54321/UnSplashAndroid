@@ -47,17 +47,14 @@ class PhotoRVAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (topicList.isNullOrEmpty()) {
             Picasso.get().load(photoList!![position]!!.urls?.regular)
-                .resize(photoList[position]!!.width!! / 5, photoList[position]!!.height!! / 5)
+                .fit()
                 .centerInside()
                 .placeholder(R.drawable.gray)
                 .into(holder.image);
             holder.categoryView.visibility = View.GONE
         } else {
             Picasso.get().load(topicList[position]!!.coverPhoto?.urls?.regular)
-                .resize(
-                    topicList[position]!!.coverPhoto?.width!! / 5,
-                    topicList[position]!!.coverPhoto?.height!! / 5
-                )
+                .fit()
                 .centerInside()
                 .placeholder(R.drawable.gray)
                 .into(holder.image);

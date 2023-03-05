@@ -8,6 +8,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Environment.DIRECTORY_PICTURES
 import android.util.Log
 import android.widget.Toast
@@ -67,6 +68,31 @@ class SelectedImageActivity : AppCompatActivity() {
         val de = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         de.enqueue(request)
     }
+//    private fun startDownload (url: String) {
+//    // Save Files in private foloder
+//        val folderName = "com.example.unsplashandroid"
+//        val myFolder = File(getExternalFilesDir(null), folderName)
+//
+//        if (!myFolder.exists()) {
+//            myFolder.mkdirs()
+//            Log.e("PATH", myFolder.absoluteFile.toString())
+//        }
+//
+//        if (myFolder.exists()) {
+//            val fileName = "${System.currentTimeMillis()}.jpeg"
+//            val file = File(myFolder.getAbsolutePath(), fileName)
+//            val request = DownloadManager.Request(Uri.parse(url))
+//                .setTitle("Downloading...${fileName}")
+//                .setDescription(data?.description)
+//                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+//                .setAllowedOverRoaming(false)
+//                .setDestinationInExternalFilesDir(this,folderName,fileName)
+////                .setDestinationUri(Uri.fromFile(file))
+//            val de = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+//            de.enqueue(request)
+//        }
+//    }
+
 
     private fun downloadImage() {
         if (!Constants.checkWriteExternalPermission(context) || !Constants.checkReadExternalPermission(context)) {
@@ -131,7 +157,7 @@ class SelectedImageActivity : AppCompatActivity() {
         }
         AppAlertDialog.displayLoadingWithText(
             context, "Permission required",
-            "More Info", false
+            "Permission required so we can store images on your storage.", false
         ) { dialogInterface, which ->
             Dexter.withActivity(context as Activity?)
                 .withPermissions(permissions)
