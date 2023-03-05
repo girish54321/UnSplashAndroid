@@ -1,5 +1,6 @@
 package com.example.unsplashandroid.adpter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,6 +48,7 @@ class PhotoRVAdapter(
         if (topicList.isNullOrEmpty()) {
             Picasso.get().load(photoList!![position]!!.urls?.regular)
                 .resize(photoList[position]!!.width!! / 5, photoList[position]!!.height!! / 5)
+                .centerInside()
                 .placeholder(R.drawable.gray)
                 .into(holder.image);
             holder.categoryView.visibility = View.GONE
@@ -56,6 +58,7 @@ class PhotoRVAdapter(
                     topicList[position]!!.coverPhoto?.width!! / 5,
                     topicList[position]!!.coverPhoto?.height!! / 5
                 )
+                .centerInside()
                 .placeholder(R.drawable.gray)
                 .into(holder.image);
             holder.categoryText.text = topicList[position]!!.title

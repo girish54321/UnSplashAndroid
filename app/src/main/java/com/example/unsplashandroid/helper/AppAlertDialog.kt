@@ -50,6 +50,7 @@ object BasicAlertDialog {
         builder!!.setMessage(subTitle)
         builder!!.setCancelable(cancelable)
         builder!!.setPositiveButton("OK"){dialogInterface, which ->
+            alertDialog?.dismiss()
         }
         alertDialog = builder!!.create()
         try {

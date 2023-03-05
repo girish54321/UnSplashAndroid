@@ -12,7 +12,8 @@ interface UnsPlashApi {
     suspend fun getPhotos(
         @Query("client_id") clientId: String,
         @Query("order_by") orderBy: String,
-        @Query("per_page") perPage: String
+        @Query("per_page") perPage: String,
+        @Query("page") page: String
     ): Response<List<UnPlashResponse>>
 
     @GET("topics")
@@ -25,7 +26,8 @@ interface UnsPlashApi {
     suspend fun getSearchImage(
         @Query("client_id") clientId: String,
         @Query("per_page") perPage: String,
-        @Query("query") query: String
+        @Query("query") query: String,
+        @Query("page") page: String
     ): Response<SearchImageModal>
 
     @GET

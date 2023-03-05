@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.myquizapp.helper.BasicAlertDialog
 import com.example.myquizapp.helper.LoadingScreen
@@ -24,7 +25,9 @@ class SelectedCategoryActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClick
     private var TAG = "SelectedCategoryActivity"
     private var binding: ActivitySelectedCategoryBinding? = null
     var selectedCategory: CategoryModal? = null
-    var datalist: List<UnPlashResponse?>? = null
+    private var dataList: MutableList<UnPlashResponse> = mutableListOf()
+    private var pageNumber: Int = 0
+    private val photoRVAdapter = PhotoRVAdapter(dataList, null, this)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySelectedCategoryBinding.inflate(layoutInflater)
@@ -34,10 +37,22 @@ class SelectedCategoryActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClick
             finish()
         }
         getUpComeingData()
+        setUpImageList()
+        setOnScrollEnd()
+    }
+
+    private fun setOnScrollEnd() {
+        binding?.gridView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (!recyclerView.canScrollVertically(1)) {
+                    getCategoryImages()
+                }
+            }
+        })
     }
 
     private fun setUpImageList() {
-        val photoRVAdapter = PhotoRVAdapter(datalist,null,this)
         binding?.gridView?.adapter = photoRVAdapter
         val staggeredGridLayoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -54,17 +69,22 @@ class SelectedCategoryActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClick
                     Locale.getDefault()
                 ) else it.toString()
             }
-            getRandomQuestion()
+            getCategoryImages()
         }
     }
 
-    private fun getRandomQuestion() {
-        selectedCategory!!.id?.let { Log.e("Data", it) }
+    private fun getCategoryImages() {
+        if (LoadingScreen.isLoading){
+            return
+        }
+        pageNumber += 1
         val context: Context = this
         LoadingScreen.displayLoadingWithText(context, "Please wait...", false)
         lifecycleScope.launchWhenCreated {
             val response = try {
-                RetrofitInstance.api.getTopicImage("${Constants.BASE_URL}/topics/${selectedCategory?.id}/photos?client_id=${Constants.APK_KEY}&per_page=30")
+                RetrofitInstance.api.getTopicImage(
+                    "${Constants.BASE_URL}/topics/${selectedCategory?.id}/photos?client_id=${Constants.APK_KEY}&per_page=30&page=${pageNumber}"
+                )
             } catch (e: IOException) {
                 LoadingScreen.hideLoading()
                 BasicAlertDialog.displayBasicAlertDialog(
@@ -87,9 +107,9 @@ class SelectedCategoryActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClick
                 return@launchWhenCreated
             }
             if (response.isSuccessful && response.body() != null) {
-                datalist = response.body()!!
+                dataList.addAll(response.body()!!)
+                photoRVAdapter.notifyDataSetChanged()
                 LoadingScreen.hideLoading()
-                setUpImageList()
             } else {
                 LoadingScreen.hideLoading()
                 BasicAlertDialog.displayBasicAlertDialog(
@@ -104,10 +124,10 @@ class SelectedCategoryActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClick
     }
 
     override fun onItemClick(position: Int) {
-        if (datalist.isNullOrEmpty()) {
+        if (dataList.isEmpty()) {
             return
         }
-        val data = datalist!![position]
+        val data = dataList[position]
         val intent = Intent(this.baseContext!!, SelectedImageActivity::class.java)
         intent.putExtra("data", data)
         startActivity(intent)

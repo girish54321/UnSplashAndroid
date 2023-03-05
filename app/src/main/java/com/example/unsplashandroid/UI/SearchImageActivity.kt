@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.myquizapp.helper.BasicAlertDialog
 import com.example.myquizapp.helper.LoadingScreen
@@ -26,37 +27,60 @@ import java.util.*
 class SearchImageActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClickLister {
     private var TAG = "SearchImageActivity"
     private var binding: ActivitySearchImageBinding? = null
-    private var datalist: List<UnPlashResponse?>? = null
-    lateinit var photoRVAdapter: PhotoRVAdapter
+    private var dataList: MutableList<UnPlashResponse?> = mutableListOf()
+    private var photoRVAdapter = PhotoRVAdapter(dataList, null, this)
+    private var searchQuery = ""
+    private var pageNumber: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchImageBinding.inflate(layoutInflater)
+
         setContentView(binding?.root)
         setSupportActionBar(binding?.toolbar)
+
+        binding?.toolbar?.setNavigationOnClickListener {
+            finish()
+        }
+
         setUpImageList()
+        setOnScrollEnd()
+    }
+
+    private fun setOnScrollEnd() {
+        binding?.searchgridView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (!recyclerView.canScrollVertically(1)) {
+                    getSearchImages()
+                }
+            }
+        })
     }
 
     private fun setUpImageList() {
         val staggeredGridLayoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         binding?.searchgridView?.layoutManager = staggeredGridLayoutManager
-        photoRVAdapter = PhotoRVAdapter(datalist, null, this)
         binding?.searchgridView?.adapter = photoRVAdapter
         photoRVAdapter.notifyDataSetChanged()
     }
 
-    private fun getRandomQuestion(query: String) {
-        supportActionBar?.title = query.replaceFirstChar {
-            if (it.isLowerCase()) it.titlecase(
-                Locale.getDefault()
-            ) else it.toString()
+    private fun getSearchImages(isNewSearch: Boolean = false) {
+//        supportActionBar?.title = searchQuery.replaceFirstChar {
+//            if (it.isLowerCase()) it.titlecase(
+//                Locale.getDefault()
+//            ) else it.toString()
+//        }
+        if(isNewSearch){
+            dataList.removeAll(dataList)
+            pageNumber = 0
         }
-        datalist = null
+        pageNumber += 1
         val context: Context = this
         LoadingScreen.displayLoadingWithText(context, "Please wait...", false)
         lifecycleScope.launchWhenCreated {
             val response = try {
-                RetrofitInstance.api.getSearchImage(Constants.APK_KEY, "30", query)
+                RetrofitInstance.api.getSearchImage(Constants.APK_KEY, "30", searchQuery,pageNumber.toString())
             } catch (e: IOException) {
                 LoadingScreen.hideLoading()
                 BasicAlertDialog.displayBasicAlertDialog(
@@ -80,10 +104,9 @@ class SearchImageActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClickListe
             }
             if (response.isSuccessful && response.body() != null) {
                 LoadingScreen.hideLoading()
-                val data: List<UnPlashResponse?>? = response.body()!!.results
-                println(data!![0]!!.urls)
-                datalist = data
-                setUpImageList()
+                val data: List<UnPlashResponse?> = response.body()!!.results
+                dataList.addAll(data)
+                photoRVAdapter.notifyDataSetChanged()
             } else {
                 LoadingScreen.hideLoading()
                 BasicAlertDialog.displayBasicAlertDialog(
@@ -98,10 +121,10 @@ class SearchImageActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClickListe
     }
 
     override fun onItemClick(position: Int) {
-        if (datalist.isNullOrEmpty()) {
+        if (dataList.isEmpty()) {
             return
         }
-        val data = datalist!![position]
+        val data = dataList!![position]
         val intent = Intent(this.baseContext!!, SelectedImageActivity::class.java)
         intent.putExtra("data", data)
         startActivity(intent)
@@ -120,10 +143,11 @@ class SearchImageActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClickListe
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 searchView.clearFocus()
-                searchView.setQuery("", false)
+//                searchView.setQuery("", false)
                 searchItem.collapseActionView()
                 if (query != null) {
-                    getRandomQuestion(query)
+                    searchQuery = query
+                    getSearchImages(true)
                 }
                 return true
             }

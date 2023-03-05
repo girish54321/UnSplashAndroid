@@ -19,6 +19,7 @@ import com.example.myquizapp.helper.AppAlertDialog
 import com.example.unsplashandroid.R
 import com.example.unsplashandroid.const.Constants
 import com.example.unsplashandroid.databinding.ActivitySelectedImageBinding
+import com.example.unsplashandroid.helper.StatusBarUtil
 import com.example.unsplashandroid.modal.UnPlashResponse
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -50,6 +51,7 @@ class SelectedImageActivity : AppCompatActivity() {
         }
         context = this
         getUpComeingData()
+        StatusBarUtil.setStatusBarColor(this, R.color.black)
         binding?.downlodBtn?.setOnClickListener {
             requestPermissions()
         }
@@ -113,7 +115,12 @@ class SelectedImageActivity : AppCompatActivity() {
             ) else it.toString()
         }
         Picasso.get().load(data!!.urls?.regular)
-            .placeholder(R.drawable.gray)
+            .placeholder(R.color.black)
+            .resize(
+                data!!.width?.div(5) ?: 1,
+                data!!.width?.div(5) ?: 1
+            )
+            .centerInside()
             .into(binding?.selectedImageView);
     }
 
