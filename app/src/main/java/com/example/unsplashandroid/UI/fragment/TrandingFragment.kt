@@ -30,13 +30,13 @@ class TrandingFragment : Fragment(), PhotoRVAdapter.OnItemClickLister {
     private var dataList: MutableList<UnPlashResponse?>? = mutableListOf()
     private var pageNumber: Int = 0
     val photoRVAdapter = PhotoRVAdapter(dataList,null,this)
+    var isLoading: Boolean = false
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        setOnScrollEnd()
         setUpImageList()
         getTradingImage()
         return binding.root
@@ -64,23 +64,24 @@ class TrandingFragment : Fragment(), PhotoRVAdapter.OnItemClickLister {
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         binding.gridView.layoutManager = staggeredGridLayoutManager
         photoRVAdapter.notifyDataSetChanged()
-
+        setOnScrollEnd()
     }
 
     private fun getTradingImage() {
-        if (LoadingScreen.isLoading){
+       if (isLoading){
             return
         }
+        toggleIsLoading()
         pageNumber += 1
-        val context: Context = this.activity?.baseContext!!
-        LoadingScreen.displayLoadingWithText(context, "Please wait...", false)
+        LoadingScreen.displayLoadingWithText(activity, "Please wait...", false)
         lifecycleScope.launchWhenCreated {
             val response = try {
-                RetrofitInstance.api.getPhotos(Constants.APK_KEY, Constants.ORDER_BY_POPULAR, "30",pageNumber.toString())
+                RetrofitInstance.api.getPhotos(Constants.APK_KEY, Constants.ORDER_BY_POPULAR, "15",pageNumber.toString())
             } catch (e: IOException) {
                 LoadingScreen.hideLoading()
+                toggleIsLoading()
                 BasicAlertDialog.displayBasicAlertDialog(
-                    context,
+                    activity,
                     "Error",
                     "IOException, you might not have internet connection",
                     false
@@ -89,6 +90,7 @@ class TrandingFragment : Fragment(), PhotoRVAdapter.OnItemClickLister {
                 return@launchWhenCreated
             } catch (e: HttpException) {
                 LoadingScreen.hideLoading()
+                toggleIsLoading()
                 BasicAlertDialog.displayBasicAlertDialog(
                     context,
                     "Error",
@@ -101,13 +103,13 @@ class TrandingFragment : Fragment(), PhotoRVAdapter.OnItemClickLister {
             if (response.isSuccessful && response.body() != null) {
                 val data: List<UnPlashResponse> = response.body()!!
                 LoadingScreen.hideLoading()
+                toggleIsLoading()
                 dataList?.addAll(data)
                 photoRVAdapter.notifyDataSetChanged()
-                if (data.isEmpty()) {
-                    return@launchWhenCreated
-                }
+                return@launchWhenCreated
             } else {
                 LoadingScreen.hideLoading()
+                toggleIsLoading()
                 BasicAlertDialog.displayBasicAlertDialog(
                     context,
                     "Error",
@@ -117,6 +119,10 @@ class TrandingFragment : Fragment(), PhotoRVAdapter.OnItemClickLister {
                 Log.e(TAG, "Response not successful")
             }
         }
+    }
+
+    private fun toggleIsLoading() {
+        isLoading = !isLoading
     }
 
     override fun onItemClick(position: Int) {

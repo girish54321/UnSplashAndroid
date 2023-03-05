@@ -53,8 +53,7 @@ class CategoryFragment : Fragment() ,PhotoRVAdapter.OnItemClickLister {
     }
 
     private fun getRandomQuestion() {
-        val context: Context = this.activity?.baseContext!!
-        LoadingScreen.displayLoadingWithText(context, "Please wait...", false)
+        LoadingScreen.displayLoadingWithText(activity, "Please wait...", false)
         lifecycleScope.launchWhenCreated {
             val response = try {
                 RetrofitInstance.api.getTopic(Constants.APK_KEY,"30")

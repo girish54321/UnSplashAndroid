@@ -71,6 +71,9 @@ class SearchImageActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClickListe
 //                Locale.getDefault()
 //            ) else it.toString()
 //        }
+        if (LoadingScreen.isLoading){
+            return
+        }
         if(isNewSearch){
             dataList.removeAll(dataList)
             pageNumber = 0
@@ -80,7 +83,7 @@ class SearchImageActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClickListe
         LoadingScreen.displayLoadingWithText(context, "Please wait...", false)
         lifecycleScope.launchWhenCreated {
             val response = try {
-                RetrofitInstance.api.getSearchImage(Constants.APK_KEY, "30", searchQuery,pageNumber.toString())
+                RetrofitInstance.api.getSearchImage(Constants.APK_KEY, "15", searchQuery,pageNumber.toString())
             } catch (e: IOException) {
                 LoadingScreen.hideLoading()
                 BasicAlertDialog.displayBasicAlertDialog(

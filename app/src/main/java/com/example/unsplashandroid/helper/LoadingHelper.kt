@@ -11,8 +11,8 @@ object LoadingScreen {
         dialog!!.setMessage("Please wait")
         dialog!!.setCancelable(cancelable)
         try {
-            dialog!!.show()
             isLoading = true
+            dialog!!.show()
         } catch (e: Exception) {
         }
 

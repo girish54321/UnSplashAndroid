@@ -77,7 +77,7 @@ class HomeFragment : Fragment(), PhotoRVAdapter.OnItemClickLister {
         LoadingScreen.displayLoadingWithText(context, "Please wait...", false)
         lifecycleScope.launchWhenCreated {
             val response = try {
-                RetrofitInstance.api.getPhotos(Constants.APK_KEY, Constants.ORDER_BY_LATEST, "30",
+                RetrofitInstance.api.getPhotos(Constants.APK_KEY, Constants.ORDER_BY_LATEST, "15",
                     pageNumber.toString()
                 )
             } catch (e: IOException) {
@@ -102,19 +102,12 @@ class HomeFragment : Fragment(), PhotoRVAdapter.OnItemClickLister {
                 return@launchWhenCreated
             }
             if (response.isSuccessful && response.body() != null) {
+                LoadingScreen.hideLoading()
                 val data: List<UnPlashResponse> = response.body()!!
                 dataList.addAll(data)
                 photoRVAdapter.notifyDataSetChanged()
-                LoadingScreen.hideLoading()
-                if (data.isEmpty()) {
-                    return@launchWhenCreated
-                }
-
-                LoadingScreen.hideLoading()
-                if (data.isEmpty()) {
-                    return@launchWhenCreated
-                }
-
+                Log.e("HIDE","In Home")
+                return@launchWhenCreated
             } else {
                 LoadingScreen.hideLoading()
                 BasicAlertDialog.displayBasicAlertDialog(
