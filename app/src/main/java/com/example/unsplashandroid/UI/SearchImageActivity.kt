@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
@@ -22,13 +21,12 @@ import com.example.unsplashandroid.databinding.ActivitySearchImageBinding
 import com.example.unsplashandroid.modal.UnPlashResponse
 import retrofit2.HttpException
 import java.io.IOException
-import java.util.*
 
 class SearchImageActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClickLister {
     private var TAG = "SearchImageActivity"
     private var binding: ActivitySearchImageBinding? = null
     private var dataList: MutableList<UnPlashResponse?> = mutableListOf()
-    private var photoRVAdapter = PhotoRVAdapter(dataList, null, this)
+    private var photoRVAdapter = PhotoRVAdapter(dataList, null, null,this)
     private var searchQuery = ""
     private var pageNumber: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {

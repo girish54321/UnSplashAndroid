@@ -2,24 +2,25 @@ package com.example.unsplashandroid.UI
 
 
 import android.Manifest
-import android.app.*
-import android.app.NotificationManager.IMPORTANCE_HIGH
+import android.app.Activity
+import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.os.Environment.DIRECTORY_PICTURES
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationCompat.PRIORITY_MAX
 import com.example.myquizapp.helper.AppAlertDialog
 import com.example.unsplashandroid.R
 import com.example.unsplashandroid.const.Constants
+import com.example.unsplashandroid.const.LocalFile
 import com.example.unsplashandroid.databinding.ActivitySelectedImageBinding
+import com.example.unsplashandroid.helper.CreateFilePath
+import com.example.unsplashandroid.helper.MyCustomDialog
+import com.example.unsplashandroid.helper.PermissionsHelper
 import com.example.unsplashandroid.helper.StatusBarUtil
 import com.example.unsplashandroid.modal.UnPlashResponse
 import com.karumi.dexter.Dexter
@@ -28,20 +29,15 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.squareup.picasso.Picasso
-import okhttp3.internal.notify
 import java.io.File
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.math.log
 
 class SelectedImageActivity : AppCompatActivity() {
     private var binding: ActivitySelectedImageBinding? = null
     var data: UnPlashResponse? = null
     lateinit var context: Context
-    private val permissions = listOf(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    )
+    var localFile: LocalFile? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySelectedImageBinding.inflate(layoutInflater)
@@ -68,30 +64,37 @@ class SelectedImageActivity : AppCompatActivity() {
         val de = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         de.enqueue(request)
     }
-//    private fun startDownload (url: String) {
-//    // Save Files in private foloder
-//        val folderName = "com.example.unsplashandroid"
-//        val myFolder = File(getExternalFilesDir(null), folderName)
-//
-//        if (!myFolder.exists()) {
-//            myFolder.mkdirs()
-//            Log.e("PATH", myFolder.absoluteFile.toString())
-//        }
-//
-//        if (myFolder.exists()) {
-//            val fileName = "${System.currentTimeMillis()}.jpeg"
-//            val file = File(myFolder.getAbsolutePath(), fileName)
-//            val request = DownloadManager.Request(Uri.parse(url))
-//                .setTitle("Downloading...${fileName}")
-//                .setDescription(data?.description)
-//                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-//                .setAllowedOverRoaming(false)
-//                .setDestinationInExternalFilesDir(this,folderName,fileName)
-////                .setDestinationUri(Uri.fromFile(file))
-//            val de = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-//            de.enqueue(request)
-//        }
-//    }
+
+
+    private fun whereToSaveDilog (url: String){
+        val customDialog = MyCustomDialog(this)
+        customDialog.show()
+        customDialog.binding.saveToApp.setOnClickListener {
+            saveToAppSotrage(url)
+            customDialog.dismiss()
+        }
+        customDialog.binding.saveToPhone.setOnClickListener {
+            startDownload(url)
+            customDialog.dismiss()
+        }
+    }
+
+    private fun saveToAppSotrage (url: String) {
+        val myFolder = CreateFilePath.createFilePath(this)
+        Log.e("PATH", myFolder.absoluteFile.toString())
+        if (myFolder.exists()) {
+            val fileName = "${System.currentTimeMillis()}.jpeg"
+            val file = File(myFolder.getAbsolutePath(), fileName)
+            val request = DownloadManager.Request(Uri.parse(url))
+                .setTitle("Downloading...${fileName}")
+                .setDescription(data?.description)
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                .setAllowedOverRoaming(false)
+                .setDestinationUri(Uri.fromFile(file))
+            val de = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+            de.enqueue(request)
+        }
+    }
 
 
     private fun downloadImage() {
@@ -105,17 +108,17 @@ class SelectedImageActivity : AppCompatActivity() {
         builder.setTitle("Download Image")
         builder.setItems(items) { dialogInterface, which ->
             if (items[which] == "Raw") {
-                data?.urls?.raw?.let { startDownload(it) }
+                data?.urls?.raw?.let { whereToSaveDilog(it) }
             } else if (items[which] == "Full") {
-                data?.urls?.full?.let { startDownload(it) }
+                data?.urls?.full?.let { whereToSaveDilog(it) }
             } else if (items[which] == "Regular") {
-                data?.urls?.regular?.let { startDownload(it) }
+                data?.urls?.regular?.let { whereToSaveDilog(it) }
             } else if (items[which] == "Small") {
-                data?.urls?.small?.let { startDownload(it) }
+                data?.urls?.small?.let { whereToSaveDilog(it) }
             } else if (items[which] == "Thumb") {
-                data?.urls?.thumb?.let { startDownload(it) }
+                data?.urls?.thumb?.let { whereToSaveDilog(it) }
             } else if (items[which] == "Small_s3") {
-                data?.urls?.smallS3?.let { startDownload(it) }
+                data?.urls?.smallS3?.let { whereToSaveDilog(it) }
             }
         }
         builder.setPositiveButton("Close") { dialogInterface, i ->
@@ -129,8 +132,15 @@ class SelectedImageActivity : AppCompatActivity() {
 
     private fun getUpComeingData() {
         data = intent.getSerializableExtra("data") as UnPlashResponse?
+        localFile = intent.getSerializableExtra("LocalFile") as LocalFile?
         if (data != null) {
             setupView()
+        }
+        if(localFile != null){
+            binding?.downlodBtn?.visibility = View.GONE
+            Picasso.get().load(localFile!!.file.absoluteFile)
+                .into(binding?.selectedImageView);
+            supportActionBar?.title = ""
         }
     }
 
@@ -159,25 +169,11 @@ class SelectedImageActivity : AppCompatActivity() {
             context, "Permission required",
             "Permission required so we can store images on your storage.", false
         ) { dialogInterface, which ->
-            Dexter.withActivity(context as Activity?)
-                .withPermissions(permissions)
-                .withListener(object : MultiplePermissionsListener {
-                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
-                        report.let {
-                            if (report.areAllPermissionsGranted()) {
-                                Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show()
-                                downloadImage()
-                            } else {
-                                Toast.makeText(context, "Please Grant Permissions to use the app", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-                    override fun onPermissionRationaleShouldBeShown(permissions: List<PermissionRequest?>?, token: PermissionToken?) {
-                        token?.continuePermissionRequest()
-                    }
-                }).withErrorListener{
-                    Toast.makeText(this, it.name, Toast.LENGTH_SHORT).show()
-                }.check()
+            PermissionsHelper().checkAppPermissions(this){
+                if(it){
+                    downloadImage()
+                }
+            }
         }
     }
 }
