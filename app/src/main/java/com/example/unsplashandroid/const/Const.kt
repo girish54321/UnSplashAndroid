@@ -3,6 +3,9 @@ package com.example.unsplashandroid.const
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import java.io.File
+import java.io.Serializable
+
 object Constants {
     const val APK_KEY: String = "jRBzm2zUw2eoIPSHZxLvY_hnSh0P8J91P2THDay4y8w"
     const val ORDER_BY_LATEST: String = "latest"
@@ -23,3 +26,5 @@ object Constants {
         return res == PackageManager.PERMISSION_GRANTED
     }
 }
+
+data class LocalFile(val fileName: String, val filePath: String,val file:File): Serializable

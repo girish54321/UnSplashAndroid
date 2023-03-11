@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.unsplashandroid.R
 import com.example.unsplashandroid.UI.fragment.CategoryFragment
 import com.example.unsplashandroid.UI.fragment.HomeFragment
+import com.example.unsplashandroid.UI.fragment.SavedImageFragment
 import com.example.unsplashandroid.UI.fragment.TrandingFragment
 import com.example.unsplashandroid.adpter.ViewPagerAdapter
 import com.example.unsplashandroid.databinding.ActivityMainBinding
@@ -25,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         adapter.addFragment(HomeFragment(), "HOME")
         adapter.addFragment(TrandingFragment(), "Trending".toUpperCase())
         adapter.addFragment(CategoryFragment(), "Category".toUpperCase())
-        adapter.addFragment(HomeFragment(), "Saved".toUpperCase())
+        adapter.addFragment(SavedImageFragment(), "Saved".toUpperCase())
 
         binding?.viewPager?.adapter = adapter
         binding?.tabs?.setupWithViewPager(binding?.viewPager)

@@ -1,6 +1,5 @@
 package com.example.unsplashandroid.UI.fragment
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -14,12 +13,10 @@ import com.example.myquizapp.helper.BasicAlertDialog
 import com.example.myquizapp.helper.LoadingScreen
 import com.example.unsplashandroid.Api.RetrofitInstance
 import com.example.unsplashandroid.UI.SelectedCategoryActivity
-import com.example.unsplashandroid.UI.SelectedImageActivity
 import com.example.unsplashandroid.adpter.PhotoRVAdapter
 import com.example.unsplashandroid.const.Constants
 import com.example.unsplashandroid.databinding.FragmentCategoryBinding
 import com.example.unsplashandroid.modal.CategoryModal
-import com.example.unsplashandroid.modal.UnPlashResponse
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -33,8 +30,12 @@ class CategoryFragment : Fragment() ,PhotoRVAdapter.OnItemClickLister {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCategoryBinding.inflate(inflater, container, false)
-        getRandomQuestion()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        getImageCategory()
     }
 
     override fun onDestroyView() {
@@ -43,7 +44,7 @@ class CategoryFragment : Fragment() ,PhotoRVAdapter.OnItemClickLister {
     }
 
     private fun setUpImageList(categoryList: List<CategoryModal?>?) {
-        val photoRVAdapter = PhotoRVAdapter(null,categoryList,this)
+        val photoRVAdapter = PhotoRVAdapter(null,categoryList,null,this)
         binding.gridView.adapter = photoRVAdapter
         val staggeredGridLayoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -52,9 +53,8 @@ class CategoryFragment : Fragment() ,PhotoRVAdapter.OnItemClickLister {
 
     }
 
-    private fun getRandomQuestion() {
-        val context: Context = this.activity?.baseContext!!
-        LoadingScreen.displayLoadingWithText(context, "Please wait...", false)
+    private fun getImageCategory() {
+        LoadingScreen.displayLoadingWithText(activity, "Please wait...", false)
         lifecycleScope.launchWhenCreated {
             val response = try {
                 RetrofitInstance.api.getTopic(Constants.APK_KEY,"30")
