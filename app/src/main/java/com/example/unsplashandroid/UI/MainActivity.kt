@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.unsplashandroid.R
 import com.example.unsplashandroid.UI.fragment.CategoryFragment
 import com.example.unsplashandroid.UI.fragment.HomeFragment
@@ -17,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
     private var binding: ActivityMainBinding? = null
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_UnSplashAndroid)
         binding = ActivityMainBinding.inflate(layoutInflater)

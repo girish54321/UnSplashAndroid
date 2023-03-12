@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="SplashScreenThem" parent="Theme.SplashScreen" tools:ignore="DuplicateDefinition">
+        <item name="windowSplashScreenBackground">@color/splash_screen_background_color</item>
+        <item name="windowSplashScreenAnimationDuration">500</item>
+        <item name="postSplashScreenTheme">@style/Theme.UnSplashAndroid</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <!-- API 31+ specific attributes -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/android_12_splash_icon</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/android_12_brand_name</item>
+    </style>
+</resources>
