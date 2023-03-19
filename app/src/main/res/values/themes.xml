@@ -13,13 +13,12 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+    
+    
+    <style name="SplashScreenThem" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_image</item>
+<!--        <item name="android:windowSplashScreenBrandingImage">@drawable/save_in_app</item>-->
 
-    <style name="Theme.UnSplashAndroid.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+<!--        <item name="s"-->
     </style>
-
-    <style name="Theme.UnSplashAndroid.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.UnSplashAndroid.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

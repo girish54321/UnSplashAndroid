@@ -46,14 +46,14 @@
         <activity
             android:name=".UI.SelectedCategoryActivity"
             android:exported="false"
-            android:label="@string/title_activity_selected_category"
-            android:theme="@style/Theme.UnSplashAndroid.NoActionBar">
+            android:label="@string/title_activity_selected_category">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".UI.MainActivity"
+            android:theme="@style/SplashScreenThem"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
