@@ -17,8 +17,5 @@
     
     <style name="SplashScreenThem" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_image</item>
-<!--        <item name="android:windowSplashScreenBrandingImage">@drawable/save_in_app</item>-->
-
-<!--        <item name="s"-->
     </style>
 </resources>

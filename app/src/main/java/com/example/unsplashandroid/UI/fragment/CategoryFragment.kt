@@ -57,7 +57,7 @@ class CategoryFragment : Fragment() ,PhotoRVAdapter.OnItemClickLister {
         LoadingScreen.displayLoadingWithText(activity, "Please wait...", false)
         lifecycleScope.launchWhenCreated {
             val response = try {
-                RetrofitInstance.api.getTopic(Constants.APK_KEY,"30")
+                RetrofitInstance.getApi(activity!!).getTopic("30")
             } catch (e: IOException) {
                 LoadingScreen.hideLoading()
                 BasicAlertDialog.displayBasicAlertDialog(

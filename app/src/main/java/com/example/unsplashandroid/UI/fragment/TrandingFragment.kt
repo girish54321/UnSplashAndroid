@@ -78,7 +78,7 @@ class TrandingFragment : Fragment(), PhotoRVAdapter.OnItemClickLister {
         LoadingScreen.displayLoadingWithText(activity, "Please wait...", false)
         lifecycleScope.launchWhenCreated {
             val response = try {
-                RetrofitInstance.api.getPhotos(Constants.APK_KEY, Constants.ORDER_BY_POPULAR, "15",pageNumber.toString())
+                RetrofitInstance.getApi(activity!!).getPhotos(Constants.ORDER_BY_POPULAR, "15",pageNumber.toString())
             } catch (e: IOException) {
                 LoadingScreen.hideLoading()
                 toggleIsLoading()

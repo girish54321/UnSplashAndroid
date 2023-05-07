@@ -89,7 +89,7 @@ class SelectedCategoryActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClick
         LoadingScreen.displayLoadingWithText(context, "Please wait...", false)
         lifecycleScope.launchWhenCreated {
             val response = try {
-                RetrofitInstance.api.getTopicImage(
+                RetrofitInstance.getApi(context).getTopicImage(
                     "${Constants.BASE_URL}/topics/${selectedCategory?.id}/photos?client_id=${Constants.APK_KEY}&per_page=30&page=${pageNumber}"
                 )
             } catch (e: IOException) {

@@ -81,7 +81,7 @@ class SearchImageActivity : AppCompatActivity(), PhotoRVAdapter.OnItemClickListe
         LoadingScreen.displayLoadingWithText(context, "Please wait...", false)
         lifecycleScope.launchWhenCreated {
             val response = try {
-                RetrofitInstance.api.getSearchImage(Constants.APK_KEY, "15", searchQuery,pageNumber.toString())
+                RetrofitInstance.getApi(context).getSearchImage("15", searchQuery,pageNumber.toString())
             } catch (e: IOException) {
                 LoadingScreen.hideLoading()
                 BasicAlertDialog.displayBasicAlertDialog(
